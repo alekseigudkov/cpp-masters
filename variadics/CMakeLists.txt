@@ -18,7 +18,7 @@
 cmake_minimum_required(VERSION 3.11)
 project(variadic)
 
-find_package(GTest REQUIRED)
+# find_package(GTest REQUIRED)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)

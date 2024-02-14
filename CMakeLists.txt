@@ -14,7 +14,15 @@
 cmake_minimum_required(VERSION 3.11)
 project(cppmasters)
 
-find_package(GTest REQUIRED)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# find_package(GTest REQUIRED)
+include (cmake/googletest.cmake)
+# add_subdirectory(thirdparty) # должен быть в начале, чтобы реализовались зависимости
+
+set (BOOST_ROOT "E:/github/boost_1_84_0/") # Путь к библиотеке Boost
+find_package(Boost REQUIRED)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
@@ -28,19 +36,30 @@ function(add_gtest TGT)
   set(UNIT_TARGET ${TGT}_unit)
   set(TEST_TARGET ${TGT}_test)
 
+  # include(GoogleTest)
+  # gtest_discover_tests(TEST_TARGET)
+
   add_executable(${UNIT_TARGET} ${SRCS})
   target_include_directories(${UNIT_TARGET} PRIVATE ${GTEST_INCLUDE_DIRS})
   target_link_libraries(${UNIT_TARGET} PRIVATE ${GTEST_BOTH_LIBRARIES})
   target_link_libraries(${UNIT_TARGET} PRIVATE Threads::Threads)
   target_link_libraries(${UNIT_TARGET} PRIVATE commonutils)
+  target_link_libraries(${UNIT_TARGET} PRIVATE gtest_main)
+  target_link_libraries(${UNIT_TARGET} PRIVATE Boost::boost)
   target_compile_features(${UNIT_TARGET} PRIVATE cxx_std_20)
+
 
   add_test(
     NAME ${TEST_TARGET}
     COMMAND ${UNIT_TARGET}
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    )
+
   set_tests_properties(${TEST_TARGET} PROPERTIES DEPENDS ${UNIT_TARGET})
+
 endfunction()
+
+
 
 function(add_demo TGT)
   add_executable(${TGT} ${TGT}.cc)
